@@ -31,6 +31,17 @@ router.post('/comments/:postId', authMiddleware, async (req, res) => {
 // - 로그인 토큰을 전달하지 않아도 댓글 목록 조회가 가능하도록 하기
 // - 조회하는 게시글에 작성된 모든 댓글을 목록 형식으로 볼 수 있도록 하기
 // - 작성 날짜 기준으로 내림차순 정렬하기
+router.get('/comments', async (req, res) => {
+    try {
+        const comments = await Comments.findAll({});
+        return res.status(200).json({ comments });
+    } catch (err) {
+        console.log(err);
+        return res.status(400).json({ errorMessage: '댓글 조회에 실패하였습니다.' });
+    }
+});
+
+// 댓글 상세 조회
 router.get('/comments/:postId', async (req, res) => {
     const { postId } = req.params;
     const comments = await Comments.findAll({ where: { PostId: postId } });
@@ -41,6 +52,14 @@ router.get('/comments/:postId', async (req, res) => {
         console.log(err);
         return res.status(400).json({ errorMessage: '댓글 목록 조회에 실패하였습니다.' });
     }
+});
+
+// 댓글 수정
+// - 로그인 토큰을 검사하여, 해당 사용자가 작성한 댓글만 수정 가능
+// - 댓글 내용을 비워둔 채 댓글 수정 API를 호출하면 "댓글 내용을 입력해주세요" 라는 메세지를 return하기
+// - 댓글 내용을 입력하고 댓글 수정 API를 호출한 경우 작성한 댓글을 수정하기
+router.put('/comments/:postId/', authMiddleware, async (req, res) => {
+    const { postId } = req.params;
 });
 
 module.exports = router;
