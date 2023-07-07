@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Comments, Posts } = require('../models');
+const { Comments } = require('../models');
 const authMiddleware = require('../middlewares/auth-middleware.js');
 
 // 댓글 작성, 조회, 수정, 삭제

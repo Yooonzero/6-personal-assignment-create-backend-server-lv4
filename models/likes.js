@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
+
             this.belongsTo(models.Users, {
                 targetKey: 'userId',
                 foreignKey: 'UserId',
@@ -55,6 +56,16 @@ module.exports = (sequelize, DataTypes) => {
                 },
                 onDelete: 'CASCADE',
                 onUpdate: 'CASCADE',
+            },
+            createdAt: {
+                allowNull: false,
+                type: DataTypes.DATE,
+                defaultValue: DataTypes.NOW,
+            },
+            updatedAt: {
+                allowNull: false,
+                type: DataTypes.DATE,
+                defaultValue: DataTypes.NOW,
             },
         },
         {
