@@ -27,24 +27,14 @@ module.exports = {
                 },
                 onDelete: 'CASCADE', // 만약 Posts 모델의 postId가 삭제되면, Likes 모델의 데이터가 삭제됩니다.
             },
-            Nickname: {
-                allowNull: false,
-                type: Sequelize.STRING,
-                references: {
-                    model: 'Users',
-                    key: 'nickname',
-                },
-                onDelete: 'CASCADE',
-                onUpdate: 'CASCADE',
-            },
             createdAt: {
                 allowNull: false,
-                type: DataTypes.DATE,
+                type: Sequelize.DATE,
                 defaultValue: Sequelize.fn('now'),
             },
             updatedAt: {
                 allowNull: false,
-                type: DataTypes.DATE,
+                type: Sequelize.DATE,
                 defaultValue: Sequelize.fn('now'),
             },
         });

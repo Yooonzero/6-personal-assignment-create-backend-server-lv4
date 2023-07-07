@@ -10,10 +10,10 @@ const authMiddleware = require('../middlewares/auth-middleware');
 router.put('/posts/:postId/likes', authMiddleware, async (req, res) => {
     const { userId } = res.locals.user;
     const { postId } = req.params;
-    const { Nickname } = req.body;
-    console.log(userId);
+    const existLikes = await Likes.findAll({ where: { UserId: userId } });
+    console.log(existLikes);
     try {
-        await Likes.create({ PostId: postId, UserId: userId, Nickname });
+        await Likes.create({ PostId: postId, UserId: userId });
         return res.status(200).json({ message: '좋아요 등록에 성공하였습니다.' });
     } catch (err) {
         console.log(err);
