@@ -18,8 +18,8 @@ if (config.use_env_variable) {
 
 // fs.readdirSync 함수를 사용하여
 // ./models 디렉토리에서 모델 파일을 읽어오고,
-// .js 확장자를 가진 파일들을 필터링하여 각각의 모델을 db 객체에 추가하고 있습니다.
-// associate 메서드가 정의된 경우에는 연관관계를 설정하고 있습니다.
+// .js 확장자를 가진 파일들을 필터링하여 각각의 모델을 db 객체에 추가하고 있다.
+// associate 메서드가 정의된 경우에는 연관관계를 설정하고 있다.
 fs.readdirSync(__dirname)
     .filter((file) => {
         return (

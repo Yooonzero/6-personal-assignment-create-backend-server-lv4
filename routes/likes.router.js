@@ -11,8 +11,12 @@ router.put('/posts/:postId/likes', authMiddleware, async (req, res) => {
     const { userId } = res.locals.user;
     const { postId } = req.params;
     const existLikes = await Likes.findAll({ where: { UserId: userId } });
-    console.log(existLikes);
+
     try {
+        if (existLikes.length) {
+            await Likes.destroy({ where: { UserId: userId } });
+            return res.status(200).json({ message: '좋아요 취소가 정상적으로 완료되었습니다.' });
+        }
         await Likes.create({ PostId: postId, UserId: userId });
         return res.status(200).json({ message: '좋아요 등록에 성공하였습니다.' });
     } catch (err) {
