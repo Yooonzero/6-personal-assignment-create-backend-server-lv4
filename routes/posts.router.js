@@ -105,18 +105,20 @@ router.put('/posts/:postId', authMiddleware, async (req, res) => {
 // 5. post(게시글) 삭제
 router.delete('/posts/:postId', authMiddleware, async (req, res) => {
     const { postId } = req.params;
-    const { userId } = res.locals.user; // 로그인된 user의 userId값. // new ObjectId("649338b6c360e48dae75bdbc")
+    const { userId } = res.locals.user;
     try {
-        const post = await Posts.findOne({ where: { postId } }); // postId라는 인자를 {}객체형태로 감싸서 전달할 경우, _id필드에 대한 Object 형변환에 실패한다.
+        const post = await Posts.findOne({ where: { postId } });
+        // 게시글이 존재하지 않는 경우
         if (!post) {
             return res.status(403).json({ errorMessage: '게시글이 존재하지 않습니다..' });
         }
+        // 게시글의 userId와 현재 로그인된 user의 userId가 일치하지 않는 경우
         if (!userId || post.UserId !== userId) {
             return res.status(403).json({ errorMessage: '게시글 삭제 권한이 존재하지 않습니다.' });
         }
         // await Posts.destroy({ where: { postId } })
-        // 109번째 줄에서 가져온 post에 destroy 메서드를 사용해서 다시 db에 접근할 필요성을 없앴다.
         // 이렇게 하면 await을 붙이지 않아도 됨.
+        // 게시글 삭제
         post.destroy().catch((err) => {
             res.status(401).json({ errorMessage: '게시글이 삭제되지 않았습니다.' });
         });
