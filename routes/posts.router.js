@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { Posts } = require('../models');
 const authMiddleware = require('../middlewares/auth-middleware.js');
+const Sequelize = require('sequelize');
 
 // 1. post(게시글) 생성
 router.post('/posts', authMiddleware, async (req, res) => {
@@ -36,22 +37,17 @@ router.get('/posts', async (req, res) => {
     try {
         // 생성날짜 기준으로 내림차순 정렬하고, posts에 할당.
         const posts = await Posts.findAll({
+            attributes: [
+                'postId',
+                'UserId',
+                'nickname',
+                'title',
+                [Sequelize.fn('left', Sequelize.col('createdAt'), 10), 'date'],
+                [Sequelize.fn('left', Sequelize.col('updatedAt'), 10), 'update'],
+            ],
             order: [['createdAt', 'DESC']],
         });
-
-        const data = {
-            posts: posts.map((a) => {
-                return {
-                    postId: a.postId,
-                    UserId: a.UserId,
-                    nickname: a.nickname,
-                    title: a.title,
-                    createdAt: a.createdAt,
-                    updatedAt: a.updatedAt,
-                };
-            }),
-        };
-        res.status(200).json(data);
+        res.status(200).json(posts);
     } catch (error) {
         console.log(error.message);
         res.status(400).json({ errorMessage: '게시글 조회에 실패하였습니다.' });

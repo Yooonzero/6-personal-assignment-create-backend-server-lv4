@@ -4,7 +4,6 @@ const { Posts, Likes } = require('../models');
 const authMiddleware = require('../middlewares/auth-middleware');
 
 // 게시글 좋아요 API
-// - 게시글 목록 조회시 글의 좋아요 갯수도 같이 표출하기
 router.put('/posts/:postId/likes', authMiddleware, async (req, res) => {
     const { userId } = res.locals.user;
     const { postId } = req.params;
@@ -36,8 +35,7 @@ router.put('/posts/:postId/likes', authMiddleware, async (req, res) => {
 });
 
 // 좋아요 게시글 조회 API
-// - 로그인 토큰을 검사하여, 유효한 토큰일 경우에만 좋아요 게시글 조회 가능
-// - 로그인 토큰에 해당하는 사용자가 좋아요 한 글에 한해서, 조회할 수 있게 하기
+// - 게시글 목록 조회시 글의 좋아요 갯수도 같이 표출하기
 // - 제목, 작성자명(nickname), 작성 날짜, 좋아요 갯수를 조회하기
 // - 제일 좋아요가 많은 게시글을 맨 위에 정렬하기 (내림차순)
 // router.get('/posts/likes', authMiddleware, async (req, res) => {});
