@@ -31,13 +31,14 @@ router.post('/posts/:postId/comments', authMiddleware, async (req, res) => {
 });
 
 // 댓글 조회
-// - 로그인 토큰을 전달하지 않아도 댓글 목록 조회가 가능하도록 하기
-// - 조회하는 게시글에 작성된 모든 댓글을 목록 형식으로 볼 수 있도록 하기
-// - 작성 날짜 기준으로 내림차순 정렬하기
 router.get('/posts/:postId/comments', async (req, res) => {
     const { postId } = req.params;
     const post = await Posts.findOne({ where: { postId } });
-    const comments = await Comments.findAll({ where: { PostId: postId } });
+    const comments = await Comments.findAll({
+        where: { PostId: postId },
+        // 댓글 내림차순 정렬
+        order: [['createdAt', 'DESC']],
+    });
 
     try {
         // 해당 게시글이 존재하지 않는 경우
