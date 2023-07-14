@@ -36,8 +36,19 @@ router.post('/posts/:postId/comments', authMiddleware, async (req, res) => {
 // - 작성 날짜 기준으로 내림차순 정렬하기
 router.get('/posts/:postId/comments', async (req, res) => {
     const { postId } = req.params;
+    const post = await Posts.findOne({ where: { postId } });
     const comments = await Comments.findAll({ where: { PostId: postId } });
+
     try {
+        // 해당 게시글이 존재하지 않는 경우
+        if (!post) {
+            return res.status(404).json({ errorMessage: '존재하지 않는 게시글입니다.' });
+        }
+        // 댓글이 존재하지 않는 경우
+        if (!comments) {
+            return res.status(404).json({ errorMessage: '댓글이 존재하지 않습니다.' });
+        }
+        // 댓글 조회
         const postComments = await comments.map((comment) => comment);
         return res.status(200).json({ message: postComments });
     } catch (err) {
