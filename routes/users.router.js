@@ -5,7 +5,6 @@ const jwt = require('jsonwebtoken');
 
 // 회원가입 API
 router.post('/signup', async (req, res) => {
-    console.log(Users);
     const { nickname, email, password, confirm } = req.body;
     try {
         // 닉네임 형식 확인
@@ -71,13 +70,13 @@ router.post('/signup', async (req, res) => {
 
 // 로그인 API
 router.post('/login', async (req, res) => {
-    const { nickname, password } = req.body; // body에 입력값을 받고,
+    const { email, password } = req.body; // body에 입력값을 받고,
     try {
-        const user = await Users.findOne({ nickname }); // DB에서 입력한 nickname을 가진 user를 찾아 변수에 할당하고,
+        const user = await Users.findOne({ email }); // DB에서 입력한 email 가진 user를 찾아 변수에 할당하고,
 
-        // DB에 해당하는 nickname이 없거나, 사용자의 password가 일치하지 않는경우.
-        if (!nickname || password !== user.password) {
-            res.status(412).json({ errorMessage: '회원 정보가 일치하지 않습니다.' }); // 해당 오류메시지 출력.
+        // DB에 해당하는 email 없거나, 사용자의 password가 일치하지 않는경우.
+        if (!email || password !== user.password) {
+            res.status(412).json({ errorMessage: '이메일 또는 패스워드를 확인해 주세요.' }); // 해당 오류메시지 출력.
             return;
         }
 
