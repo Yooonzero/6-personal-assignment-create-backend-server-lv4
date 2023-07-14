@@ -106,14 +106,15 @@ router.delete('/posts/:postId', authMiddleware, async (req, res) => {
     const { postId } = req.params;
     const { userId } = res.locals.user; // 로그인된 user의 userId값. // new ObjectId("649338b6c360e48dae75bdbc")
     try {
-        const post = await Posts.findOne({ postId }); // postId라는 인자를 {}객체형태로 감싸서 전달할 경우, _id필드에 대한 Object 형변환에 실패한다.
+        const post = await Posts.findOne({ where: { postId } }); // postId라는 인자를 {}객체형태로 감싸서 전달할 경우, _id필드에 대한 Object 형변환에 실패한다.
         if (!post) {
             return res.status(403).json({ errorMessage: '게시글이 존재하지 않습니다..' });
         }
         if (!userId || post.UserId !== userId) {
             return res.status(403).json({ errorMessage: '게시글 삭제 권한이 존재하지 않습니다.' });
         }
-        await Posts.destroy({ where: { postId } }).catch((err) => {
+        // await Posts.destroy({ where: { postId } })
+        await post.destroy().catch((err) => {
             res.status(401).json({ errorMessage: '게시글이 삭제되지 않았습니다.' });
         });
         return res.status(200).json({ message: '게시글을 성공적으로 삭제하였습니다.' });
