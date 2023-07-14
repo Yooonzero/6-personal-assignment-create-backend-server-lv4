@@ -61,21 +61,9 @@ router.get('/posts', async (req, res) => {
 // 3. post(게시글) 상세 조회
 router.get('/posts/:postId', async (req, res) => {
     const { postId } = req.params;
-
     try {
         const post = await Posts.findOne({ postId });
-        const data = {
-            post: {
-                postId,
-                UserId: post.UserId,
-                nickname: post.nickname,
-                title: post.title,
-                content: post.content,
-                createdAt: post.createdAt,
-                updatedAt: post.updatedAt,
-            },
-        };
-        res.status(200).json(data);
+        res.status(200).json(post);
     } catch (error) {
         console.log(error.message);
         res.status(400).json({ errorMessage: '게시글 조회에 실패 하였습니다.' });
