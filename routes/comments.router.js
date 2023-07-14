@@ -100,12 +100,31 @@ router.put('/posts/:postId/comments/:commentId', authMiddleware, async (req, res
 });
 
 // 댓글 삭제
-// - 로그인 토큰을 검사하여, 해당 사용자가 작성한 댓글만 삭제 가능
-// - 원하는 댓글을 삭제하기
 router.delete('/posts/:postId/comments/:commentId', authMiddleware, async (req, res) => {
-    const { commentId } = req.params;
+    const { postId, commentId } = req.params;
+    const { userId } = res.locals.user;
+    const post = await Posts.findOne({ where: { postId } });
+    const comments = await Comments.findOne({ where: { commentId } });
     try {
-        await Comments.destroy({ where: { commentId } });
+        // 댓글을 삭제할 게시글이 존재하지 않는경우
+        if (!post) {
+            return res.status(404).json({ errorMessage: '해당하는 게시글이 존재하지 않습니다.' });
+        }
+
+        // 댓글이 존재하지 않는경우
+        if (!comments) {
+            return res.status(404).json({ errorMessage: '해당하는 댓글이 존재하지 않습니다.' });
+        }
+
+        // 댓글의 삭제 권한이 존재하지 않는 경우
+        if (comments.UserId !== userId) {
+            return res.status(403).json({ errorMessage: '댓글의 삭제 권한이 존재하지 않습니다.' });
+        }
+
+        // 댓글 삭제
+        await Comments.destroy({ where: { commentId } }).catch((err) => {
+            return res.status(400).json({ errorMessage: '댓글 삭제가 정상적으로 처리되지 않았습니다.' });
+        });
         return res.status(200).json({ message: '성공적으로 댓글을 삭제하였습니다.' });
     } catch (err) {
         console.log(err);
