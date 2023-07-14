@@ -114,7 +114,9 @@ router.delete('/posts/:postId', authMiddleware, async (req, res) => {
             return res.status(403).json({ errorMessage: '게시글 삭제 권한이 존재하지 않습니다.' });
         }
         // await Posts.destroy({ where: { postId } })
-        await post.destroy().catch((err) => {
+        // 109번째 줄에서 가져온 post에 destroy 메서드를 사용해서 다시 db에 접근할 필요성을 없앴다.
+        // 이렇게 하면 await을 붙이지 않아도 됨.
+        post.destroy().catch((err) => {
             res.status(401).json({ errorMessage: '게시글이 삭제되지 않았습니다.' });
         });
         return res.status(200).json({ message: '게시글을 성공적으로 삭제하였습니다.' });
