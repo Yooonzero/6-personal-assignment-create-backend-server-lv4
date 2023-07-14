@@ -59,14 +59,39 @@ router.get('/posts/:postId/comments', async (req, res) => {
 });
 
 // 댓글 수정
-// - 로그인 토큰을 검사하여, 해당 사용자가 작성한 댓글만 수정 가능
-// - 댓글 내용을 비워둔 채 댓글 수정 API를 호출하면 "댓글 내용을 입력해주세요" 라는 메세지를 return하기
-// - 댓글 내용을 입력하고 댓글 수정 API를 호출한 경우 작성한 댓글을 수정하기
 router.put('/posts/:postId/comments/:commentId', authMiddleware, async (req, res) => {
-    const { commentId } = req.params;
+    const { postId, commentId } = req.params;
     const { content } = req.body;
+    const { userId } = res.locals.user;
+    const post = await Posts.findOne({ where: { postId } });
+    const comments = await Comments.findOne({ where: { commentId } });
+
     try {
-        await Comments.update({ content }, { where: { commentId } });
+        // 게시글 존재 확인
+        if (!post) {
+            return res.status(404).json({ errorMessage: '해당하는 게시글이 존재하지 않습니다.' });
+        }
+
+        // 댓글 존재 확인
+        if (!comments) {
+            return res.status(404).json({ errorMessage: '해당하는 댓글이 존재하지 않습니다.' });
+        }
+
+        // 댓글 수정권한 확인
+        if (comments.UserId !== userId) {
+            return res.status(403).json({ errorMessage: '댓글 수정권한이 없습니다.' });
+        }
+
+        // 댓글 내용 형식 확인
+        if (content.length < 1) {
+            return res.status(412).json({ errorMessage: '데이터 형식이 올바르지 않습니다.' });
+        }
+
+        // 댓글 수정
+        await Comments.update({ content }, { where: { commentId } }).catch((err) => {
+            console.log(err);
+            res.status(400).json({ errorMessage: '댓글 수정이 정상적으로 처리되지 않았습니다.' });
+        });
         return res.status(200).json({ message: '댓글 수정에 성공하였습니다.' });
     } catch (err) {
         console.log(err);
