@@ -14,11 +14,12 @@ router.post('/posts', authMiddleware, async (req, res) => {
         return res.status(412).json({ errorMessage: '데이터 형식이 올바르지 않습니다.' });
     }
     // 제목의 입력값이 없을 때,
-    if (title === '' || title === undefined) {
+    if (!title || !title.trim()) {
         return res.status(412).json({ errorMessage: '게시글 제목의 형식이 올바르지 않습니다.' });
     }
+    // html의 textarea는 빈칸도 받는다.
     // 내용의 입력값이 없을 때,
-    if (content === '' || content === undefined) {
+    if (!content || !content.trim()) {
         return res.status(412).json({ errorMessage: '게시글 내용의 형식이 올바르지 않습니다.' });
     }
 
