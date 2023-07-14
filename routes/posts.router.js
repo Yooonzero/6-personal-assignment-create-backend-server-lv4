@@ -42,6 +42,7 @@ router.get('/posts', async (req, res) => {
                 'UserId',
                 'nickname',
                 'title',
+                'content',
                 [Sequelize.fn('left', Sequelize.col('createdAt'), 10), 'date'],
                 [Sequelize.fn('left', Sequelize.col('updatedAt'), 10), 'update'],
             ],
