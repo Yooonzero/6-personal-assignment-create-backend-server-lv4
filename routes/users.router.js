@@ -8,6 +8,7 @@ router.post('/signup', async (req, res) => {
     console.log(Users);
     const { nickname, email, password, confirm } = req.body;
     try {
+        // 닉네임 형식 확인
         const confirmedNickname = /^[a-zA-Z0-9]{3,}$/.test(nickname);
         if (!confirmedNickname) {
             res.status(412).json({
@@ -24,13 +25,19 @@ router.post('/signup', async (req, res) => {
             });
         }
 
-        //패스워드 길이 확인 : 4자이상
-        if (password.length < 4) {
-            res.status(412).json({
-                errorMessage: '패스워드의 형식이 올바르지 않습니다.',
-            });
-            return;
-        }
+        // 이메일 중복 확인
+        const existEmail = await Users.findOne({ where: { email } });
+        if (existEmail) return res.status(412).json({ errorMessage: '이미 존재하는 이메일 입니다.' });
+
+        // 이메일 양식 검증
+        const checkEmail = new RegExp(/^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$/);
+        if (!checkEmail.test(email))
+            return res.status(412).json({ errorMessage: '이메일의 형식이 올바르지 않습니다.' });
+
+        // 패스워드 형식 확인
+        const checkPassword = new RegExp(/^[a-zA-Z0-9!@#$%^&*()]+$/);
+        if (!checkPassword.test(password) || password.length < 4)
+            return res.status(412).send({ errorMessage: '패스워드의 형식이 올바르지 않습니다.' });
 
         //패스워드의 값이 닉네임과 동일하지는 않는지 확인
         // if (password.includes(...nickname)) // 한 글자라도 포함되어 있다면, 사용하지 못하게 하는 코드.
@@ -41,7 +48,7 @@ router.post('/signup', async (req, res) => {
             return;
         }
 
-        // 패스워드 확인
+        // 패스워드 일치 확인
         if (password !== confirm) {
             res.status(412).json({
                 errorMessage: '패스워드가 일치하지 않습니다.',
